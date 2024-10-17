@@ -182,6 +182,8 @@ res.send(result)
       const result = await classesCollection.updateOne(filter,updateDoc,options)
       res.send(result)
     })
+
+    
     // get approved classes
     app.get('/approved-classes', async (req, res) => {
       const query = {status: "approved"};
@@ -360,6 +362,43 @@ res.send(result)
     const result = await classesCollection.find().sort({totalEntolled: -1 }).limit(6).toArray() 
     res.send(result)
   })
+  app.get(`/checkUserBanned`, verifyJWT, async (req, res) => {
+    try {
+      const pipeline = [
+        {
+          $lookup: {
+            from: "users",
+            localField: "instructorEmail",
+            foreignField: "email",
+            as: "userDetails"
+          }
+        },
+        {
+          $match: {
+            userDetails: { $size: 0 } // Фильтруем классы, у которых нет соответствующего пользователя
+          }
+        },
+        {
+          $project: {
+            _id: 1 // Выбираем только _id для удаления
+          }
+        }
+      ];
+  
+      const result = await classesCollection.aggregate(pipeline).toArray();
+  
+      // Удаляем классы, у которых нет соответствующего пользователя
+      for (const cls of result) {
+        await classesCollection.deleteOne({ _id: cls._id });
+        console.log(`Class with ID ${cls._id} deleted.`);
+      }
+  
+      res.send({ message: "Check and deletion completed." });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({ message: "Internal server error." });
+    }
+  });
 
   app.get('/popular-instructors', async (req, res) => {
     const pipeline = [
