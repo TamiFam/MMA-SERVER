@@ -14,7 +14,7 @@ app.use(cors({
   origin: 'https://mma-final-ff.onrender.com'
 }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'src'))); 
+app.use(express.static(path.join(__dirname, 'Frontend'))); 
 
 // Routes
 // SET TOKEN .
@@ -69,7 +69,7 @@ async function run() {
 
      
      app.get('*', (req, res) => {
-      res.sendFile(path.join(__dirname, 'src', 'index.html'));
+      res.sendFile(path.join(__dirname, 'Frontend', 'index.html'));
     });
      app.post("/api/set-token",async (req,res)=> {
       const user = req.body
