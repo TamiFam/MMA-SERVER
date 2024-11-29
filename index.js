@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const stripe = require('stripe')(process.env.PAYMENT_SECRET);
 const cors = require('cors');
+const path = require('path');
 
 const port = process.env.PORT 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
@@ -13,6 +14,7 @@ app.use(cors({
   origin: 'https://mma-final-ff.onrender.com'
 }));
 app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public'))); 
 
 // Routes
 // SET TOKEN .
@@ -66,7 +68,9 @@ async function run() {
      client.connect();
 
      
-
+     app.get('*', (req, res) => {
+      res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    });
      app.post("/api/set-token",async (req,res)=> {
       const user = req.body
       const token = jwt.sign(user, process.env.ACCESS_SECRET,{expiresIn: '24d'})
