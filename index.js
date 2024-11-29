@@ -9,7 +9,9 @@ const port = process.env.PORT
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const { default: mongoose } = require('mongoose');
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'https://mma-final-ff.onrender.com'
+}));
 app.use(express.json());
 
 // Routes
@@ -60,6 +62,7 @@ async function run() {
     const enrolledCollection = database.collection("enrolled");
     const paymentCollection = database.collection("payments");
     const appliedCollection = database.collection("applied");
+    const commentsCollection = database.collection("comments");
      client.connect();
 
      
@@ -537,6 +540,22 @@ run().catch(console.dir);
 app.get('/', (req, res) => {
   res.send('Hello World!')
 })
+// комментарии пользователя
+
+// app.post('/api/comments', verifyJWT, async (req, res) => {
+//   const { text, userId } = req.body;
+//   const comment = { text, userId: new ObjectId(userId), createdAt: new Date() };
+//   const result = await commentsCollection.insertOne(comment);
+//   res.status(201).send(result.ops[0]);
+// });
+
+// // Маршрут для получения комментариев пользователя
+// app.get('/api/comments/:userId', verifyJWT, async (req, res) => {
+//   const userId = req.params.userId;
+//   const comments = await commentsCollection.find({ userId: new ObjectId(userId) }).toArray();
+//   res.send(comments);
+// });
+
 
 
 app.listen(port, () => {
